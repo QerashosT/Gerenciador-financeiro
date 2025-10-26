@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Painel Financeiro — Profissional</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <div class="logo-mark">💰</div>
+        <div class="logo-text"><strong>Finanças</strong><small>Dashboard</small></div>
+      </div>
+    </div>
+
+    <div class="nav-center">
+      <input id="searchInput" class="nav-search" type="search" placeholder="Pesquisar despesas ou categorias...">
+    </div>
+
+    <div class="nav-right">
+      <button id="themeToggle" class="btn nav-btn" title="Alternar tema">🌙</button>
+
+      <label class="file-label btn nav-btn ghost" id="importLabel">📁 Importar CSV
+        <input id="csvUpload" type="file" accept=".csv" />
+      </label>
+
+      <button id="exportCsv" class="btn nav-btn ghost" title="Exportar CSV">⬇ Exportar CSV</button>
+      <button id="exportPdf" class="btn nav-btn primary-outline" title="Exportar relatório atual">📄 Exportar PDF</button>
+
+      <button id="openAddModal" class="btn nav-btn accent">+ Adicionar</button>
+      <a href="/news" class="btn nav-btn ghost">Notícias</a>
+    </div>
+  </header>
+
+  <div class="page">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">💵</div>
+        <div>
+          <h1>Finanças</h1>
+          <p class="muted">Gerencie, preveja e exporte</p>
+        </div>
+      </div>
+
+      <div class="side-stats">
+        <div class="small-card"><small>Total</small><div id="total">R$ 0,00</div></div>
+        <div class="small-card"><small>Média</small><div id="media">R$ 0,00</div></div>
+        <div class="small-card"><small>Este Mês</small><div id="mes">R$ 0,00</div></div>
+      </div>
+
+      <div class="side-actions">
+        <label class="muted small">Filtrar categoria</label>
+        <select id="filterCategory"><option value="">Todas</option></select>
+        <label class="muted small">Filtrar mês</label>
+        <select id="filterMonth"><option value="">Todos</option></select>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="top-cards">
+        <div class="card large">
+          <h3>Projeção (com base no que está filtrado)</h3>
+          <div class="small muted">A projeção considera somente os meses visíveis após filtros aplicados.</div>
+          <div class="chart-wrap small-height">
+            <canvas id="predictionChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Despesas por Categoria</h3>
+          <div class="chart-wrap">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Despesas Mensais</h3>
+          <div class="chart-wrap">
+            <canvas id="monthlyChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Tendência</h3>
+          <div class="chart-wrap">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="recent-section">
+        <div class="card">
+          <h3>Despesas Recentes</h3>
+          <ul id="expenseList" class="expense-list"></ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal: Add Expense -->
+  <div id="addModal" class="modal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="closeAddModal" aria-label="Fechar">×</button>
+      <div class="modal-header">
+        <h3 id="modalTitle">Adicionar despesa</h3>
+        <p class="muted">Preencha descrição, valor e data.</p>
+      </div>
+
+      <form id="modalExpenseForm" class="modal-form">
+        <label>Descrição
+          <input id="m_description" placeholder="Ex: Mercado, assinatura..." required/>
+        </label>
+        <div class="row">
+          <label>Valor (R$)
+            <input id="m_amount" type="number" step="0.01" placeholder="0.00" required/>
+          </label>
+          <label>Categoria
+            <input id="m_category" placeholder="Ex: Alimentação" required/>
+          </label>
+        </div>
+        <label>Data
+          <input id="m_date" type="date" required/>
+        </label>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn">Salvar</button>
+          <button type="button" class="btn ghost" id="cancelModal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    window.INITIAL_STATE = {
+      expenses: {{ initial_expenses|safe }},
+      prediction: {{ prediction|safe }}
+    };
+  </script>
+
+  <script src="{{ url_for('static', filename='charts-init.js') }}"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

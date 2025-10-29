@@ -1,0 +1,10 @@
+C:\Users\jvnso\Programacao\Cursos\ProjetosAulaFecaf\Gerenciador-financeiro\rust_structures\target\release\deps\memoffset-667ec8a12bc7ee1c.d: C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\lib.rs C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\raw_field.rs C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\offset_of.rs C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\span_of.rs
+
+C:\Users\jvnso\Programacao\Cursos\ProjetosAulaFecaf\Gerenciador-financeiro\rust_structures\target\release\deps\libmemoffset-667ec8a12bc7ee1c.rlib: C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\lib.rs C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\raw_field.rs C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\offset_of.rs C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\span_of.rs
+
+C:\Users\jvnso\Programacao\Cursos\ProjetosAulaFecaf\Gerenciador-financeiro\rust_structures\target\release\deps\libmemoffset-667ec8a12bc7ee1c.rmeta: C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\lib.rs C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\raw_field.rs C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\offset_of.rs C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\span_of.rs
+
+C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\lib.rs:
+C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\raw_field.rs:
+C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\offset_of.rs:
+C:\Users\jvnso\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\memoffset-0.8.0\src\span_of.rs:

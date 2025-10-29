@@ -1,0 +1,8 @@
+README.md
+pyproject.toml
+gerenciador_financeiro.egg-info/PKG-INFO
+gerenciador_financeiro.egg-info/SOURCES.txt
+gerenciador_financeiro.egg-info/dependency_links.txt
+gerenciador_financeiro.egg-info/requires.txt
+gerenciador_financeiro.egg-info/top_level.txt
+rust_structures/__init__.py

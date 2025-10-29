@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Painel Financeiro — Profissional</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -10,6 +11,7 @@
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
 </head>
+
 <body>
   <header class="navbar">
     <div class="nav-left">
@@ -49,16 +51,26 @@
       </div>
 
       <div class="side-stats">
-        <div class="small-card"><small>Total</small><div id="total">R$ 0,00</div></div>
-        <div class="small-card"><small>Média</small><div id="media">R$ 0,00</div></div>
-        <div class="small-card"><small>Este Mês</small><div id="mes">R$ 0,00</div></div>
+        <div class="small-card"><small>Total</small>
+          <div id="total">R$ 0,00</div>
+        </div>
+        <div class="small-card"><small>Média</small>
+          <div id="media">R$ 0,00</div>
+        </div>
+        <div class="small-card"><small>Este Mês</small>
+          <div id="mes">R$ 0,00</div>
+        </div>
       </div>
 
       <div class="side-actions">
         <label class="muted small">Filtrar categoria</label>
-        <select id="filterCategory"><option value="">Todas</option></select>
+        <select id="filterCategory">
+          <option value="">Todas</option>
+        </select>
         <label class="muted small">Filtrar mês</label>
-        <select id="filterMonth"><option value="">Todos</option></select>
+        <select id="filterMonth">
+          <option value="">Todos</option>
+        </select>
       </div>
     </aside>
 
@@ -77,6 +89,16 @@
           <div class="chart-wrap">
             <canvas id="categoryChart"></canvas>
           </div>
+          <button id="rustTestBtn">Incrementar contador Rust</button>
+          <div id="rustCounterDisplay">Contador: 0</div>
+
+          <script>
+            document.getElementById("rustTestBtn").addEventListener("click", async () => {
+              const response = await fetch("/api/increment_counter");
+              const data = await response.json();
+              document.getElementById("rustCounterDisplay").textContent = "Contador: " + data.count;
+            });
+          </script>
         </div>
 
         <div class="card">
@@ -114,18 +136,18 @@
 
       <form id="modalExpenseForm" class="modal-form">
         <label>Descrição
-          <input id="m_description" placeholder="Ex: Mercado, assinatura..." required/>
+          <input id="m_description" placeholder="Ex: Mercado, assinatura..." required />
         </label>
         <div class="row">
           <label>Valor (R$)
-            <input id="m_amount" type="number" step="0.01" placeholder="0.00" required/>
+            <input id="m_amount" type="number" step="0.01" placeholder="0.00" required />
           </label>
           <label>Categoria
-            <input id="m_category" placeholder="Ex: Alimentação" required/>
+            <input id="m_category" placeholder="Ex: Alimentação" required />
           </label>
         </div>
         <label>Data
-          <input id="m_date" type="date" required/>
+          <input id="m_date" type="date" required />
         </label>
 
         <div class="modal-actions">
@@ -138,12 +160,13 @@
 
   <script>
     window.INITIAL_STATE = {
-      expenses: {{ initial_expenses|safe }},
-      prediction: {{ prediction|safe }}
+      expenses: {{ initial_expenses | safe }},
+    prediction: { { prediction | safe } }
     };
   </script>
 
   <script src="{{ url_for('static', filename='charts-init.js') }}"></script>
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>

@@ -11,6 +11,8 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 
+from rust_structures import Counter
+
 BASE_DIR = os.path.dirname(__file__)
 
 app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"), static_folder=os.path.join(BASE_DIR, "static"))
@@ -268,6 +270,14 @@ def report_pdf():
     doc.build(elements)
     buffer.seek(0)
     return send_file(buffer, as_attachment=True, download_name="relatorio_financeiro_detalhado.pdf", mimetype="application/pdf")
+
+counter = Counter()
+
+@app.route('/api/increment_counter')
+def increment_counter():
+    counter.increment()
+    return {"count": counter.get_count()}
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=4025)

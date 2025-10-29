@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools", "wheel", "setuptools-rust"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gerenciador-financeiro"
+version = "0.1.0"
+dependencies = [
+    "flask",
+    "flask-sqlalchemy",
+    "flask-cors",
+    "feedparser",
+    "scikit-learn",
+    "reportlab",
+    "numpy"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["rust_structures*"]
+
+[tool.setuptools-rust]
+bindings = "pyo3"

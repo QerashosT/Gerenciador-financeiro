@@ -1,0 +1,1 @@
+C:\Users\jvnso\Programacao\Cursos\ProjetosAulaFecaf\Gerenciador-financeiro\rust_structures\target\release\rust_structures.dll: C:\Users\jvnso\Programacao\Cursos\ProjetosAulaFecaf\Gerenciador-financeiro\rust_structures\src\lib.rs

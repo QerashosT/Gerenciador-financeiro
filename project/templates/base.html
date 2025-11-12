@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Aqui você vai implementar seu novo design (Figma) -->
+    <!-- Carregue seu CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <title>{{ title or 'Gestor Financeiro' }}</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('main.index') }}">Dashboard</a>
+            {% if current_user.is_authenticated %}
+                <!-- Links para usuários logados (ex: adicionar despesa, metas) -->
+                <a href="#">Minhas Metas</a>
+                <a href="{{ url_for('auth.logout') }}">Sair ({{ current_user.name }})</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Entrar</a>
+                <a href="{{ url_for('auth.register') }}">Registrar</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        <!-- Exibe mensagens flash (ex: "login com sucesso") -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- O conteúdo da página específica virá aqui -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Gestor Financeiro</p>
+    </footer>
+
+    <!-- Carregue seus JS aqui -->
+</body>
+</html>

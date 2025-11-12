@@ -1,0 +1,42 @@
+{% extends "auth_base.html" %}
+
+{% block content %}
+
+    <div class="auth-header">
+        <img src="{{ url_for('static', filename='images/Me_ajuda_ai_logo.svg') }}" alt="Logo Me Ajuda AI" class="auth-logo">
+        <h1 class="auth-title">Me Ajuda <span>AI</span></h1>
+    </div>
+
+    <form method="POST" action="" class="auth-form" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.email.label(text="E-mail*") }}
+            {{ form.email(placeholder="exemplo@gmail.com") }}
+            {% if form.email.errors %}
+                <div class="errors">
+                    {% for error in form.email.errors %}<span>{{ error }}</span>{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.password.label(text="Senha*") }}
+            {{ form.password(placeholder="ex. 123!@#321") }}
+            {% if form.password.errors %}
+                <div class="errors">
+                    {% for error in form.password.errors %}<span>{{ error }}</span>{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.submit(class="btn-primary", value="Entrar") }}
+        </div>
+    </form>
+
+    <div class="auth-link">
+        Não tem conta? <a href="{{ url_for('auth.register') }}">Cadastre-se</a>
+    </div>
+
+{% endblock %}

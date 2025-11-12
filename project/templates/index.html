@@ -1,0 +1,295 @@
+{% extends "dashboard_base.html" %}
+
+{% block content %}
+    <h1>Dashboard</h1>
+
+    <div class="dashboard-grid">
+        <div class="kpi-row">
+            <div class="kpi-card income">
+                <div class="kpi-header">
+                    <span class="kpi-label">Receitas do Mês</span>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                    </div>
+                </div>
+                <div class="kpi-value">R$ {{ "%.2f"|format(total_income) }}</div>
+                <div class="kpi-trend">
+                    <span>Mês atual</span>
+                </div>
+            </div>
+
+            <div class="kpi-card expense">
+                <div class="kpi-header">
+                    <span class="kpi-label">Despesas do Mês</span>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-arrow-trend-down"></i>
+                    </div>
+                </div>
+                <div class="kpi-value">R$ {{ "%.2f"|format(total_expense) }}</div>
+                <div class="kpi-trend">
+                    <span>Mês atual</span>
+                </div>
+            </div>
+
+            <div class="kpi-card balance">
+                <div class="kpi-header">
+                    <span class="kpi-label">Saldo do Mês</span>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                </div>
+                <div class="kpi-value">R$ {{ "%.2f"|format(savings) }}</div>
+                <div class="kpi-trend">
+                    <span>Mês atual</span>
+                </div>
+            </div>
+
+            <div class="kpi-card goal">
+                <div class="kpi-header">
+                    <span class="kpi-label">Meta Atingida</span>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-flag-checkered"></i>
+                    </div>
+                </div>
+                <div class="kpi-value">{{ "%.0f"|format(goal_progress) }}%</div>
+                <div class="kpi-trend">
+                    <i class="fa-solid fa-bullseye"></i>
+                    <span>Progresso total</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="goal-card-large">
+            {% if main_goal %}
+                <h2><i class="fa-solid fa-bullseye"></i> Sua Meta: {{ main_goal.name }}</h2>
+                <div class="goal-progress-container">
+                    <div class="goal-amounts">
+                        <div class="goal-amount">
+                            <span class="goal-amount-label">Valor Atual</span>
+                            <span class="goal-amount-value">R$ {{ "%.2f"|format(main_goal.current_amount) }}</span>
+                        </div>
+                        <div class="goal-amount">
+                            <span class="goal-amount-label">Valor Alvo</span>
+                            <span class="goal-amount-value">R$ {{ "%.2f"|format(main_goal.target_amount) }}</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: {{ goal_progress }}%;"></div>
+                    </div>
+                    <div class="goal-percentage">{{ "%.0f"|format(goal_progress) }}% concluído</div>
+                </div>
+                <div class="goal-actions">
+                    <button class="btn btn-primary-goal" data-modal-trigger="goal-modal">
+                        <i class="fa-solid fa-pen"></i>
+                        Editar Meta
+                    </button>
+                    </div>
+            {% else %}
+                 <h2><i class="fa-solid fa-bullseye"></i> Defina sua Meta Principal</h2>
+                 <p>A meta é o foco do sistema. Crie uma para começar a economizar.</p>
+                 <div class="goal-actions">
+                    <button class="btn btn-primary-goal" data-modal-trigger="goal-modal">
+                        <i class="fa-solid fa-flag-checkered"></i>
+                        Criar Meta
+                    </button>
+                 </div>
+            {% endif %}
+        </div>
+
+        <div class="card chart-card">
+            <h2><i class="fa-solid fa-chart-pie"></i> Despesas por Categoria (Mês)</h2>
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+        <div class="card chart-card">
+            <h2><i class="fa-solid fa-chart-line"></i> Receitas vs Despesas (6 Meses)</h2>
+            <canvas id="trendChart"></canvas>
+        </div>
+
+        <div class="card category-card">
+            <h2><i class="fa-solid fa-list"></i> Maiores Gastos (Mês)</h2>
+            <div class="category-list">
+                {% if category_data %}
+                    {% for category, value in category_data %}
+                        <div class="category-item">
+                            <div class="category-icon">
+                                <i class="{{ category_icons.get(category, category_icons.default) }}"></i>
+                            </div>
+                            <div class="category-info">
+                                <div class="category-name">{{ category }}</div>
+                                <div class="category-bar">
+                                    <div class="category-bar-fill" style="width: {{ (value / total_expense * 100) if total_expense > 0 else 0 }}%;"></div>
+                                </div>
+                            </div>
+                            <div class="category-value">R$ {{ "%.2f"|format(value) }}</div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Nenhuma despesa este mês.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card transactions-card">
+            <h2><i class="fa-solid fa-clock-rotate-left"></i> Transações Recentes</h2>
+            <div class="transaction-list">
+                {% if recent_transactions %}
+                    {% for tx in recent_transactions %}
+                        <div class="transaction-item">
+                            <div class="transaction-icon {{ tx.type }}">
+                                <i class="fa-solid {{ 'fa-arrow-up' if tx.type == 'income' else 'fa-arrow-down' }}"></i>
+                            </div>
+                            <div class="transaction-info">
+                                <div class="transaction-name">{{ tx.item.description }}</div>
+                                <div class="transaction-date">{{ tx.item.date.strftime('%d/%m/%Y') }}</div>
+                            </div>
+                            <div class="transaction-value {{ tx.type }}">
+                                {{ '+R$' if tx.type == 'income' else '-R$' }} {{ "%.2f"|format(tx.item.amount) }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Nenhuma transação registrada.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="goal-modal">
+        <div class="modal-overlay" data-modal-close="goal-modal"></div>
+        <div class="modal-content card form-card">
+            <button class="modal-close" data-modal-close="goal-modal">&times;</button>
+
+            <h2>{% if main_goal %}Editar sua Meta{% else %}Definir sua Meta Principal{% endif %}</h2>
+            <p class="modal-subtitle">Qual é o seu grande objetivo? (Viagem, carro novo, etc.)</p>
+
+            <form method="POST" action="{{ url_for('main.index') }}" novalidate>
+                {{ goal_form.hidden_tag() }}
+
+                <div class="form-group">
+                    {{ goal_form.name.label(text="Nome da Meta") }}
+                    {{ goal_form.name(class="form-control", placeholder="Ex: Viagem para o Japão") }}
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        {{ goal_form.target_amount.label(text="Valor Alvo") }}
+                        <div class="currency-input-wrapper">
+                            <input type="text" class="form-control currency-mask" placeholder="0,00" inputmode="decimal">
+                            {{ goal_form.target_amount(class="hidden-currency-value") }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ goal_form.target_date.label(text="Data Alvo") }}
+                        {{ goal_form.target_date(class="form-control") }}
+                    </div>
+                </div>
+
+                {{ goal_form.submit_goal(class="btn-primary") }}
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Passa os dados do Flask (Jinja2) para o JavaScript
+        const categoryLabels = {{ category_data|map(attribute=0)|list|tojson }};
+        const categoryValues = {{ category_data|map(attribute=1)|list|tojson }};
+
+        const trendLabels = {{ trend_data.labels|tojson }};
+        const trendIncomes = {{ trend_data.incomes|tojson }};
+        const trendExpenses = {{ trend_data.expenses|tojson }};
+
+        // Cores do CSS
+        const colors = {
+            verde: '#35D16C',
+            verdeClaro: '#6DE69A',
+            amarelo: '#FFD302',
+            amareloClaro: '#FFE25C',
+            verdeLighter: '#B3F1CC',
+            vermelho: '#FF4757',
+            verdeSecundario: '#2DBA77'
+        };
+
+        // 1. Gráfico de Categoria (Doughnut)
+        const categoryCtx = document.getElementById('categoryChart');
+        if (categoryCtx && categoryValues.length > 0) {
+            new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        data: categoryValues,
+                        backgroundColor: [
+                            colors.verde,
+                            colors.verdeClaro,
+                            colors.amarelo,
+                            colors.amareloClaro,
+                            colors.verdeSecundario,
+                            colors.verdeLighter
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 15, font: { family: 'Inter', size: 12 } }
+                        }
+                    }
+                }
+            });
+        } else if (categoryCtx) {
+            // Mostra uma mensagem se não houver dados
+            categoryCtx.parentElement.innerHTML = '<p style="text-align:center; margin-top: 50px; color: #666;">Sem dados de despesa para este mês.</p>';
+        }
+
+        // 2. Gráfico de Tendência (Linha)
+        const trendCtx = document.getElementById('trendChart');
+        if (trendCtx) {
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: trendLabels,
+                    datasets: [{
+                        label: 'Receitas',
+                        data: trendIncomes,
+                        borderColor: colors.verde,
+                        backgroundColor: 'rgba(53, 209, 108, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Despesas',
+                        data: trendExpenses,
+                        borderColor: colors.vermelho,
+                        backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 15, font: { family: 'Inter', size: 12 } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toLocaleString('pt-BR');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}

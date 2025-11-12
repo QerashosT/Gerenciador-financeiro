@@ -1,0 +1,133 @@
+{% extends "dashboard_base.html" %}
+
+{% block content %}
+    <h1>Controle Financeiro</h1>
+
+    <!-- Grid para Formulários e Listas -->
+    <div class="controle-grid">
+
+        <!-- ===== Coluna 1: Formulários ===== -->
+        <div class="forms-column">
+
+            <!-- Card de Adicionar Receita -->
+            <div class="card form-card">
+                <h2>Adicionar Receita</h2>
+                <form method="POST" action="" novalidate>
+                    {{ income_form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ income_form.description.label }}
+                        {{ income_form.description(class="form-control") }}
+                    </div>
+                    <div class="form-group-row">
+                        <!-- CORREÇÃO: O form-group envolve o wrapper -->
+                        <div class="form-group">
+                            {{ income_form.amount.label }}
+                            <div class="currency-input-wrapper">
+                                <input type="text" class="form-control currency-mask" placeholder="0,00" inputmode="decimal">
+                                {{ income_form.amount(class="hidden-currency-value") }}
+                            </div>
+                            <!-- O </div> EXTRA FOI REMOVIDO DAQUI -->
+                        </div>
+                        <div class="form-group">
+                            {{ income_form.date.label }}
+                            {{ income_form.date(class="form-control") }}
+                        </div>
+                    </div>
+                    {{ income_form.submit_income(class="btn-primary") }}
+                </form>
+            </div>
+
+            <!-- Card de Adicionar Despesa -->
+            <div class="card form-card">
+                <h2>Adicionar Despesa</h2>
+                <form method="POST" action="" novalidate>
+                    {{ expense_form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ expense_form.description.label }}
+                        {{ expense_form.description(class="form-control") }}
+                    </div>
+                    <div class="form-group-row">
+                        <!-- CORREÇÃO: O form-group envolve o wrapper -->
+                        <div class="form-group">
+                            {{ expense_form.amount.label }}
+                            <div class="currency-input-wrapper">
+                                <input type="text" class="form-control currency-mask" placeholder="0,00" inputmode="decimal">
+                                {{ expense_form.amount(class="hidden-currency-value") }}
+                            </div>
+                            <!-- O </div> EXTRA FOI REMOVIDO DAQUI -->
+                        </div>
+                        <div class="form-group">
+                            {{ expense_form.category.label }}
+                            {{ expense_form.category(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ expense_form.date.label }}
+                        {{ expense_form.date(class="form-control") }}
+                    </div>
+                    {{ expense_form.submit_expense(class="btn-primary") }}
+                </form>
+            </div>
+
+        </div>
+
+        <!-- ===== Coluna 2: Listas ===== -->
+        <div class="lists-column">
+
+            <!-- Card de Últimas Receitas -->
+            <div class="card list-card">
+                <h2>Últimas Receitas</h2>
+                <ul class="item-list">
+                    {% for item in incomes %}
+                    <li class="item-row">
+                        <!-- Ícone de Receita (Novo) -->
+                        <div class="item-icon income">
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </div>
+                        <div class="item-info">
+                            <span class="item-desc">{{ item.description }}</span>
+                            <span class="item-date">{{ item.date.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                        <div class="item-value income">
+                            R$ {{ "%.2f"|format(item.amount) }}
+                        </div>
+                        <form action="{{ url_for('main.delete_income', item_id=item.id) }}" method="POST">
+                            <button type="submit" class="btn-delete" title="Excluir">&times;</button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="item-row-empty">Nenhuma receita adicionada.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Card de Últimas Despesas -->
+            <div class="card list-card">
+                <h2>Últimas Despesas</h2>
+                <ul class="item-list">
+                    {% for item in expenses %}
+                    <li class="item-row">
+                        <!-- Ícone de Categoria (Novo) -->
+                        <div class="item-icon expense">
+                            <i class="{{ category_icons.get(item.category, category_icons.default) }}"></i>
+                        </div>
+                        <div class="item-info">
+                            <span class="item-desc">{{ item.description }}</span>
+                            <span class="item-date">{{ item.category }} - {{ item.date.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                        <div class="item-value expense">
+                            -R$ {{ "%.2f"|format(item.amount) }}
+                        </div>
+                        <form action="{{ url_for('main.delete_expense', item_id=item.id) }}" method="POST">
+                            <button type="submit" class="btn-delete" title="Excluir">&times;</button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="item-row-empty">Nenhuma despesa adicionada.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

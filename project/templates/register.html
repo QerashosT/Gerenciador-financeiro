@@ -1,0 +1,64 @@
+{% extends "auth_base.html" %}
+
+{% block content %}
+
+    <div class="auth-header">
+        <img src="{{ url_for('static', filename='images/Me_ajuda_ai_logo.svg') }}" alt="Logo Me Ajuda AI" class="auth-logo">
+        <h1 class="auth-title">Me Ajuda <span>AI</span></h1>
+    </div>
+
+    <form method="POST" action="" class="auth-form" novalidate>
+        {{ form.hidden_tag() }}
+
+        <h2>Cadastro</h2>
+
+        <div class="form-group">
+            {{ form.name.label(text="Nome*") }}
+            {{ form.name(placeholder="João Arnaldo") }}
+            {% if form.name.errors %}
+                <div class="errors">
+                    {% for error in form.name.errors %}<span>{{ error }}</span>{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.email.label(text="E-mail*") }}
+            {{ form.email(placeholder="arnoldjunior@gmail.com") }}
+            {% if form.email.errors %}
+                <div class="errors">
+                    {% for error in form.email.errors %}<span>{{ error }}</span>{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.password.label(text="Senha*") }}
+            {{ form.password(placeholder="ex: 123!@#321") }}
+            {% if form.password.errors %}
+                <div class="errors">
+                    {% for error in form.password.errors %}<span>{{ error }}</span>{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.confirm_password.label(text="Confirmar Senha*") }}
+            {{ form.confirm_password(placeholder="Repita sua senha") }}
+            {% if form.confirm_password.errors %}
+                <div class="errors">
+                    {% for error in form.confirm_password.errors %}<span>{{ error }}</span>{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.submit(class="btn-primary", value="Criar") }}
+        </div>
+    </form>
+
+    <div class="auth-link">
+        Já tem conta? <a href="{{ url_for('auth.login') }}">Entre</a>
+    </div>
+
+{% endblock %}

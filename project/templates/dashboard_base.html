@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>{{ title or 'Dashboard' }} - Me Ajuda AI</title>
+</head>
+<body>
+
+    <div class="dashboard-layout">
+
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="{{ url_for('static', filename='images/Me_ajuda_ai_logo.svg') }}" alt="Logo" class="sidebar-logo">
+                <h1 class="sidebar-title">Me Ajuda <span>AI</span></h1>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li>
+                    <a href="{{ url_for('main.index') }}"
+                       class="{{ 'active' if request.endpoint.startswith('main.index') else '' }}">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.controle') }}"
+                       class="{{ 'active' if request.endpoint.startswith('main.controle') else '' }}">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Controle</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                        <span>Investimentos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa-solid fa-newspaper"></i>
+                        <span>Notícias</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fa-solid fa-user-circle"></i>
+                    <span>{{ current_user.name }}</span>
+                </div>
+                <a href="{{ url_for('auth.logout') }}" class="logout-button" title="Sair">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages-dashboard">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+        <script src="https://unpkg.com/imask"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

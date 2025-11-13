@@ -1,0 +1,18 @@
+/* Base */
+@import url('base/reset.css');
+@import url('base/typography.css');
+
+/* components */
+@import url('components/buttons.css');
+@import url('components/forms.css');
+@import url('components/cards.css');
+@import url('components/modals.css');
+@import url('components/alerts.css');
+
+/* Layout */
+@import url('layout/sidebar.css');
+@import url('layout/auth.css');
+
+/* Pages */
+@import url('pages/dashboard.css');
+@import url('pages/controle.css');

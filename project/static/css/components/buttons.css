@@ -1,0 +1,100 @@
+/* Base Button Styles */
+.btn,
+button.btn,
+input[type="submit"].btn,
+.btn-primary,
+.btn-secondary,
+.btn-primary-goal,
+.btn-primary-card {
+    padding: 12px 24px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-family: var(--font-inter) !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    text-decoration: none !important;
+    text-align: center !important;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+}
+
+/* Primary Button (Padrão - Verde) */
+.btn-primary,
+input[type="submit"].btn-primary,
+button.btn-primary {
+    background-color: var(--verde-primario) !important;
+    color: var(--verde-secundario) !important;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--verde-primario-light) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Primary Button on Goal Card (Amarelo) */
+.btn-primary-goal {
+    background: var(--amarelo) !important;
+    color: var(--preto) !important;
+}
+
+.btn-primary-goal:hover:not(:disabled) {
+    background: var(--amarelo-light) !important;
+    transform: translateY(-2px);
+}
+
+/* Primary Button on Regular Cards */
+.btn-primary-card {
+    background-color: var(--verde-primario) !important;
+    color: var(--verde-secundario) !important;
+    margin-top: 16px;
+}
+
+.btn-primary-card:hover:not(:disabled) {
+    background-color: var(--verde-primario-light) !important;
+}
+
+/* Secondary Button */
+.btn-secondary,
+.btn-secondary-goal {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: var(--branco) !important;
+    border: 2px solid var(--branco) !important;
+}
+
+.btn-secondary:hover:not(:disabled),
+.btn-secondary-goal:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Delete Button */
+.btn-delete {
+    background: none !important;
+    border: none !important;
+    color: var(--vermelho) !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.btn-delete:hover {
+    background-color: var(--vermelho-bg) !important;
+}
+
+/* Full Width Button */
+.btn-full,
+.btn-primary.btn-full {
+    width: 100% !important;
+}

@@ -1,0 +1,137 @@
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 64px 24px;
+    background-color: var(--branco);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.auth-logo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 16px;
+}
+
+.auth-title {
+    font-family: var(--font-figtree);
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--verde-secundario);
+}
+
+.auth-title span {
+    color: var(--verde-primario);
+}
+
+.auth-form {
+    width: 100%;
+    max-width: 380px;
+}
+
+.auth-form h2 {
+    font-family: var(--font-inter);
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 32px;
+    color: var(--verde-secundario-light);
+    display: flex;
+    align-items: center;
+}
+
+.auth-form h2::before,
+.auth-form h2::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--gelo);
+}
+
+.auth-form h2::before {
+    margin-right: 16px;
+}
+
+.auth-form h2::after {
+    margin-left: 16px;
+}
+
+/* Estilos específicos para inputs de autenticação */
+.auth-form .form-group {
+    margin-bottom: 24px !important;
+}
+
+.auth-form .form-group input {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    font-family: var(--font-inter) !important;
+    font-size: 16px !important;
+    color: var(--verde-secundario) !important;
+    border: 1px solid var(--gelo) !important;
+    border-radius: 8px !important;
+    background-color: var(--branco) !important;
+    box-sizing: border-box !important;
+    transition: border-color 0.2s ease !important;
+}
+
+.auth-form .form-group input:focus {
+    outline: none !important;
+    border-color: var(--verde-primario) !important;
+    box-shadow: 0 0 0 3px rgba(53, 209, 108, 0.1) !important;
+}
+
+.auth-form .form-group input::placeholder {
+    color: var(--gelo) !important;
+}
+
+/* Botão de submit no formulário de auth */
+.auth-form .btn-primary,
+.auth-form input[type="submit"] {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    background-color: var(--verde-primario) !important;
+    color: var(--verde-secundario) !important;
+    font-family: var(--font-inter) !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.auth-form .btn-primary:hover,
+.auth-form input[type="submit"]:hover {
+    background-color: var(--verde-primario-light) !important;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 24px;
+    font-family: var(--font-inter);
+    font-size: 16px;
+    color: var(--verde-secundario);
+}
+
+.auth-link a {
+    color: var(--verde-secundario-lighter);
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.auth-link a:hover {
+    color: var(--verde-secundario-light);
+}
+
+.flash-messages {
+    width: 100%;
+    max-width: 380px;
+    margin-bottom: 16px;
+}

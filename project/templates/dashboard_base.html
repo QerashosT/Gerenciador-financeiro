@@ -36,8 +36,8 @@
                     </a>
                 </li>
                 <li>
-                    <!-- Link de Investimentos (Ainda sem rota, mas pronto) -->
-                    <a href="#">
+                    <a href="{{ url_for('investments.index') }}"
+                       class="{{ 'active' if request.endpoint.startswith('investments.') else '' }}">
                         <i class="fa-solid fa-arrow-trend-up"></i>
                         <span>Investimentos</span>
                     </a>

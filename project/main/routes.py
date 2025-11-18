@@ -4,7 +4,8 @@ from flask_login import login_required, current_user
 from project.models import Goal, Income, Expense
 from project import db
 from project.main.forms import IncomeForm, ExpenseForm, GoalForm
-from project.utils.ai import predict_next_month_expenses  # <--- IMPORTAR IA
+from project.utils.ai import predict_next_month_expenses
+from project.utils.news import fetch_news
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import json  # <--- IMPORTANTE PARA DEBUG E FORMATACAO
@@ -226,3 +227,20 @@ def delete_expense(item_id):
     db.session.delete(item)
     db.session.commit()
     return redirect(url_for('main.controle'))
+
+@main.route("/news")
+@login_required
+def news_page():
+    """
+    Nova Rota: Renderiza APENAS o container com o loader.
+    O conteúdo será carregado via AJAX pelo cliente.
+    """
+    return render_template("news.html", title="Notícias") # Não passamos mais 'news'
+
+@main.route("/api/news")
+@login_required
+def api_news():
+    """API endpoint que faz o trabalho pesado de buscar notícias."""
+    limit = int(request.args.get("limit", 12))
+    items = fetch_news(limit=limit)
+    return jsonify(items)

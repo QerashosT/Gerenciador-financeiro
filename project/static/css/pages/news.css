@@ -1,0 +1,116 @@
+/* Barra de Filtros */
+.news-controls {
+    display: flex;
+    gap: var(--spacing-12);
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: var(--spacing-24);
+    padding: var(--spacing-16);
+}
+
+/* Campo de Busca com Ícone */
+.search-wrapper {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+}
+
+.search-wrapper i {
+    position: absolute;
+    left: var(--spacing-12);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gelo); /* Usando a variável do reset.css */
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 10px 10px 36px; /* Espaço para o ícone */
+    border: 1px solid var(--gelo);
+    border-radius: var(--radius-md);
+    font-family: var(--font-inter);
+    font-size: 14px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--verde-primario);
+}
+
+/* Selects de Filtro */
+.filter-select {
+    padding: 10px;
+    border: 1px solid var(--gelo);
+    border-radius: var(--radius-md);
+    background: var(--branco);
+    font-family: var(--font-inter);
+    min-width: 150px;
+    cursor: pointer;
+}
+
+/* Botão de Atualizar (Sobrescrevendo btn-secondary para contexto local se necessário) */
+.btn-refresh {
+    color: var(--verde-secundario);
+    border: 1px solid var(--gelo) !important;
+    background-color: var(--branco) !important;
+}
+.btn-refresh:hover {
+    background-color: var(--cinza-fundo) !important;
+}
+
+/* Grid de Notícias */
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-24);
+}
+
+/* Loader */
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    background: var(--branco);
+    border-radius: var(--radius-xl);
+    color: var(--cinza-texto);
+    box-shadow: var(--shadow-sm);
+}
+
+.loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--cinza-fundo);
+    border-top: 4px solid var(--verde-primario);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--spacing-16);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Tags Temáticas */
+.tags-container {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Cores das Tags (Hardcoded pois são específicas deste contexto) */
+.tag.agro { background: #E8F5E9; color: #2E7D32; }
+.tag.economia { background: #E3F2FD; color: #1565C0; }
+.tag.cripto { background: #FFF3E0; color: #EF6C00; }
+.tag.geral { background: var(--cinza-fundo); color: var(--cinza-texto); }

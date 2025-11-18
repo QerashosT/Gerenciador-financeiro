@@ -1,0 +1,207 @@
+.card {
+    background: var(--branco);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-24);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.card h2 {
+    font-family: var(--font-figtree);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--verde-secundario);
+    margin-bottom: var(--spacing-16);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Form Card */
+.form-card {
+    background-color: #F8F8F8;
+}
+
+.form-card h2 {
+    margin-bottom: var(--spacing-24);
+}
+
+/* List Card */
+.list-card {
+    background-color: #F8F8F8;
+}
+
+/* KPI Cards */
+.kpi-card {
+    background: var(--branco);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-24);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+}
+
+.kpi-card.income::before { background: var(--verde-primario); }
+.kpi-card.expense::before { background: var(--vermelho); }
+.kpi-card.balance::before { background: var(--amarelo); }
+.kpi-card.goal::before { background: var(--verde-secundario-lighter); }
+
+.kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-12);
+}
+
+.kpi-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--cinza-texto);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kpi-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.kpi-card.income .kpi-icon {
+    background: var(--verde-primario-lighter);
+    color: var(--verde-secundario);
+}
+
+.kpi-card.expense .kpi-icon {
+    background: var(--vermelho-bg);
+    color: var(--vermelho);
+}
+
+.kpi-card.balance .kpi-icon {
+    background: var(--amarelo-lighter);
+    color: #B88400;
+}
+
+.kpi-card.goal .kpi-icon {
+    background: var(--verde-primario-lighter);
+    color: var(--verde-secundario);
+}
+
+.kpi-value {
+    font-family: var(--font-inter);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--preto);
+    margin-bottom: var(--spacing-4);
+}
+
+.kpi-trend {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    color: var(--cinza-texto);
+}
+
+.kpi-trend.up { color: var(--verde-primario); }
+.kpi-trend.down { color: var(--vermelho); }
+
+/* Goal Card Large */
+.goal-card-large {
+    background: linear-gradient(135deg, var(--verde-secundario) 0%, var(--verde-secundario-light) 100%);
+    color: var(--branco);
+    padding: var(--spacing-32);
+    border-radius: var(--radius-xl);
+}
+
+.goal-card-large h2 {
+    color: var(--branco);
+    font-size: 28px;
+    margin-bottom: var(--spacing-24);
+}
+
+.goal-progress-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-24);
+}
+
+.goal-amounts {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-16);
+}
+
+.goal-amount {
+    display: flex;
+    flex-direction: column;
+}
+
+.goal-amount-label {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-bottom: var(--spacing-4);
+}
+
+.goal-amount-value {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: var(--spacing-12);
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--amarelo) 0%, var(--amarelo-light) 100%);
+    border-radius: var(--radius-sm);
+    transition: width var(--transition-normal);
+}
+
+.goal-percentage {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.goal-actions {
+    display: flex;
+    gap: var(--spacing-12);
+    margin-top: var(--spacing-24);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card {
+        padding: var(--spacing-16);
+    }
+
+    .kpi-value {
+        font-size: 24px;
+    }
+}

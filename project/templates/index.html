@@ -13,9 +13,7 @@
                     </div>
                 </div>
                 <div class="kpi-value">R$ {{ "%.2f"|format(total_income) }}</div>
-                <div class="kpi-trend">
-                    <span>Mês atual</span>
-                </div>
+                <div class="kpi-trend"><span>Mês atual</span></div>
             </div>
 
             <div class="kpi-card expense">
@@ -26,9 +24,7 @@
                     </div>
                 </div>
                 <div class="kpi-value">R$ {{ "%.2f"|format(total_expense) }}</div>
-                <div class="kpi-trend">
-                    <span>Mês atual</span>
-                </div>
+                <div class="kpi-trend"><span>Mês atual</span></div>
             </div>
 
             <div class="kpi-card balance">
@@ -39,9 +35,7 @@
                     </div>
                 </div>
                 <div class="kpi-value">R$ {{ "%.2f"|format(savings) }}</div>
-                <div class="kpi-trend">
-                    <span>Mês atual</span>
-                </div>
+                <div class="kpi-trend"><span>Mês atual</span></div>
             </div>
 
             <div class="kpi-card goal">
@@ -57,6 +51,38 @@
                     <span>Progresso total</span>
                 </div>
             </div>
+        </div>
+
+        <div class="card ai-card" style="grid-column: span 12; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white;">
+            <h2><i class="fa-solid fa-robot"></i> Previsão Financeira (IA)</h2>
+
+            {% if ai_prediction and ai_prediction.status == 'success' %}
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+                    <div>
+                        <p style="font-size: 14px; color: #94a3b8; margin-bottom: 5px;">Previsão de gastos para o próximo mês</p>
+                        <div style="font-size: 36px; font-weight: 700; color: #38bdf8;">
+                            R$ {{ "%.2f"|format(ai_prediction.predicted_value) }}
+                        </div>
+                        <div style="font-size: 14px; margin-top: 5px;">
+                            Tendência:
+                            <span style="color: {{ '#35D16C' if ai_prediction.trend == 'Decrescente' else '#FF4757' }}; font-weight: bold;">
+                                {{ ai_prediction.trend }}
+                            </span>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; font-size: 13px;">
+                        <p><strong>Precisão do Modelo:</strong></p>
+                        <ul style="list-style: none; margin-top: 5px;">
+                            <li>R² Score: {{ ai_prediction.r2_score }} (Quanto mais próximo de 1, melhor)</li>
+                            <li>Margem de Erro (MAE): R$ {{ ai_prediction.mae }}</li>
+                        </ul>
+                    </div>
+                </div>
+            {% elif ai_prediction and ai_prediction.status == 'insufficient_data' %}
+                <p>Ainda não temos dados suficientes para gerar uma previsão precisa. Adicione despesas em pelo menos 2 meses diferentes.</p>
+            {% else %}
+                <p>Adicione mais despesas para ativar a Inteligência Artificial.</p>
+            {% endif %}
         </div>
 
         <div class="goal-card-large">
@@ -80,17 +106,15 @@
                 </div>
                 <div class="goal-actions">
                     <button class="btn btn-primary-goal" data-modal-trigger="goal-modal">
-                        <i class="fa-solid fa-pen"></i>
-                        Editar Meta
+                        <i class="fa-solid fa-pen"></i> Editar Meta
                     </button>
-                    </div>
+                </div>
             {% else %}
                  <h2><i class="fa-solid fa-bullseye"></i> Defina sua Meta Principal</h2>
                  <p>A meta é o foco do sistema. Crie uma para começar a economizar.</p>
                  <div class="goal-actions">
                     <button class="btn btn-primary-goal" data-modal-trigger="goal-modal">
-                        <i class="fa-solid fa-flag-checkered"></i>
-                        Criar Meta
+                        <i class="fa-solid fa-flag-checkered"></i> Criar Meta
                     </button>
                  </div>
             {% endif %}
@@ -159,18 +183,14 @@
         <div class="modal-overlay" data-modal-close="goal-modal"></div>
         <div class="modal-content card form-card">
             <button class="modal-close" data-modal-close="goal-modal">&times;</button>
-
             <h2>{% if main_goal %}Editar sua Meta{% else %}Definir sua Meta Principal{% endif %}</h2>
             <p class="modal-subtitle">Qual é o seu grande objetivo? (Viagem, carro novo, etc.)</p>
-
             <form method="POST" action="{{ url_for('main.index') }}" novalidate>
                 {{ goal_form.hidden_tag() }}
-
                 <div class="form-group">
                     {{ goal_form.name.label(text="Nome da Meta") }}
                     {{ goal_form.name(class="form-control", placeholder="Ex: Viagem para o Japão") }}
                 </div>
-
                 <div class="form-group-row">
                     <div class="form-group">
                         {{ goal_form.target_amount.label(text="Valor Alvo") }}
@@ -184,112 +204,124 @@
                         {{ goal_form.target_date(class="form-control") }}
                     </div>
                 </div>
-
                 {{ goal_form.submit_goal(class="btn-primary") }}
             </form>
         </div>
     </div>
 
     <script>
-        // Passa os dados do Flask (Jinja2) para o JavaScript
-        const categoryLabels = {{ category_data|map(attribute=0)|list|tojson }};
-        const categoryValues = {{ category_data|map(attribute=1)|list|tojson }};
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. DEBUG: Vamos ver o que o Python enviou
+            // O filtro |tojson|safe garante que o JSON seja renderizado corretamente no HTML
+            const categoryDataRaw = {{ category_data|tojson|safe }};
+            const trendDataRaw = {{ trend_data|tojson|safe }};
 
-        const trendLabels = {{ trend_data.labels|tojson }};
-        const trendIncomes = {{ trend_data.incomes|tojson }};
-        const trendExpenses = {{ trend_data.expenses|tojson }};
+            console.log("--- DADOS RECEBIDOS DO BACKEND ---");
+            console.log("Categoria:", categoryDataRaw);
+            console.log("Tendência:", trendDataRaw);
 
-        // Cores do CSS
-        const colors = {
-            verde: '#35D16C',
-            verdeClaro: '#6DE69A',
-            amarelo: '#FFD302',
-            amareloClaro: '#FFE25C',
-            verdeLighter: '#B3F1CC',
-            vermelho: '#FF4757',
-            verdeSecundario: '#2DBA77'
-        };
+            // Cores do CSS
+            const colors = {
+                verde: '#35D16C',
+                verdeClaro: '#6DE69A',
+                amarelo: '#FFD302',
+                amareloClaro: '#FFE25C',
+                verdeLighter: '#B3F1CC',
+                vermelho: '#FF4757',
+                verdeSecundario: '#2DBA77'
+            };
 
-        // 1. Gráfico de Categoria (Doughnut)
-        const categoryCtx = document.getElementById('categoryChart');
-        if (categoryCtx && categoryValues.length > 0) {
-            new Chart(categoryCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: categoryLabels,
-                    datasets: [{
-                        data: categoryValues,
-                        backgroundColor: [
-                            colors.verde,
-                            colors.verdeClaro,
-                            colors.amarelo,
-                            colors.amareloClaro,
-                            colors.verdeSecundario,
-                            colors.verdeLighter
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { padding: 15, font: { family: 'Inter', size: 12 } }
+            // ----------------------------------------------
+            // 2. GRÁFICO DE CATEGORIA (PIZZA/DOUGHNUT)
+            // ----------------------------------------------
+            const categoryCanvas = document.getElementById('categoryChart');
+
+            if (categoryCanvas) {
+                // Verifica se categoryDataRaw é uma lista válida e tem itens
+                if (Array.isArray(categoryDataRaw) && categoryDataRaw.length > 0) {
+                    const categoryLabels = categoryDataRaw.map(item => item[0]);
+                    const categoryValues = categoryDataRaw.map(item => item[1]);
+
+                    new Chart(categoryCanvas.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: categoryLabels,
+                            datasets: [{
+                                data: categoryValues,
+                                backgroundColor: [
+                                    colors.verde, colors.verdeClaro, colors.amarelo,
+                                    colors.amareloClaro, colors.verdeSecundario, colors.verdeLighter
+                                ],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: { padding: 15, font: { family: 'Inter', size: 12 } }
+                                }
+                            }
                         }
-                    }
+                    });
+                } else {
+                    // Se a lista estiver vazia, mostra mensagem amigável
+                    const parent = categoryCanvas.parentElement;
+                    categoryCanvas.remove(); // Remove o canvas vazio
+                    parent.innerHTML += `
+                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:300px; color:#999;">
+                            <i class="fa-solid fa-chart-pie" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                            <p>Sem despesas registradas neste mês.</p>
+                        </div>
+                    `;
                 }
-            });
-        } else if (categoryCtx) {
-            // Mostra uma mensagem se não houver dados
-            categoryCtx.parentElement.innerHTML = '<p style="text-align:center; margin-top: 50px; color: #666;">Sem dados de despesa para este mês.</p>';
-        }
+            }
 
-        // 2. Gráfico de Tendência (Linha)
-        const trendCtx = document.getElementById('trendChart');
-        if (trendCtx) {
-            new Chart(trendCtx, {
-                type: 'line',
-                data: {
-                    labels: trendLabels,
-                    datasets: [{
-                        label: 'Receitas',
-                        data: trendIncomes,
-                        borderColor: colors.verde,
-                        backgroundColor: 'rgba(53, 209, 108, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }, {
-                        label: 'Despesas',
-                        data: trendExpenses,
-                        borderColor: colors.vermelho,
-                        backgroundColor: 'rgba(255, 71, 87, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { padding: 15, font: { family: 'Inter', size: 12 } }
-                        }
+            // ----------------------------------------------
+            // 3. GRÁFICO DE TENDÊNCIA (LINHA)
+            // ----------------------------------------------
+            const trendCanvas = document.getElementById('trendChart');
+
+            if (trendCanvas && trendDataRaw) {
+                new Chart(trendCanvas.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: trendDataRaw.labels,
+                        datasets: [{
+                            label: 'Receitas',
+                            data: trendDataRaw.incomes,
+                            borderColor: colors.verde,
+                            backgroundColor: 'rgba(53, 209, 108, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }, {
+                            label: 'Despesas',
+                            data: trendDataRaw.expenses,
+                            borderColor: colors.vermelho,
+                            backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return 'R$ ' + value.toLocaleString('pt-BR');
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { padding: 15, font: { family: 'Inter', size: 12 } } }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) { return 'R$ ' + value.toLocaleString('pt-BR'); }
                                 }
                             }
                         }
                     }
-                }
-            });
-        }
+                });
+            }
+        });
     </script>
 {% endblock %}

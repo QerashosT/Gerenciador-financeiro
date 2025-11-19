@@ -1,0 +1,274 @@
+{% extends "dashboard_base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>IA de Investimentos</h1>
+    <p class="text-regular" style="margin-bottom: 32px; color: var(--cinza-texto);">
+        Simule o futuro do seu dinheiro utilizando Inteligência Artificial Preditiva.
+    </p>
+
+    <div class="dashboard-grid">
+        <!-- Formulário de Simulação -->
+        <div class="card" style="grid-column: span 4;">
+            <h2><i class="fa-solid fa-microchip"></i> Parâmetros</h2>
+
+            <!-- NOVO: Área para mensagens de erro estilizadas -->
+            <div id="form-feedback"></div>
+
+            <form id="sim-form">
+                <div class="form-group">
+                    <label>Código do Ativo (Ticker)</label>
+                    <!-- Input vinculado ao datalist -->
+                    <input type="text" id="ticker" class="form-control" list="tickers-list" placeholder="Busque ou digite (ex: PETR4)" required autocomplete="off">
+
+                    <!-- Lista de Sugestões -->
+                    <datalist id="tickers-list">
+                        <!-- Brasil (B3) -->
+                        <option value="PETR4.SA">Petrobras PN</option>
+                        <option value="VALE3.SA">Vale ON</option>
+                        <option value="ITUB4.SA">Itaú Unibanco PN</option>
+                        <option value="BBDC4.SA">Bradesco PN</option>
+                        <option value="BBAS3.SA">Banco do Brasil ON</option>
+                        <option value="WEGE3.SA">WEG ON</option>
+                        <option value="MGLU3.SA">Magalu ON</option>
+                        <option value="VIIA3.SA">Via Varejo ON</option>
+                        <option value="RENT3.SA">Localiza ON</option>
+                        <option value="ELET3.SA">Eletrobras ON</option>
+                        <!-- EUA -->
+                        <option value="AAPL">Apple Inc.</option>
+                        <option value="MSFT">Microsoft Corp.</option>
+                        <option value="GOOGL">Alphabet Inc. (Google)</option>
+                        <option value="AMZN">Amazon.com Inc.</option>
+                        <option value="TSLA">Tesla Inc.</option>
+                        <option value="NVDA">NVIDIA Corp.</option>
+                        <!-- Cripto -->
+                        <option value="BTC-USD">Bitcoin (USD)</option>
+                        <option value="ETH-USD">Ethereum (USD)</option>
+                    </datalist>
+
+                    <small style="color: #888; font-size: 12px; display: block; margin-top: 4px;">
+                        Selecione da lista ou digite outro código.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label>Valor Inicial</label>
+                    <div class="currency-input-wrapper">
+                        <input type="text" class="form-control currency-mask" placeholder="0,00" inputmode="decimal" required>
+                        <input type="hidden" id="amount" class="hidden-currency-value">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Período de Projeção (Meses)</label>
+                    <input type="number" id="months" class="form-control" value="12" min="3" max="60">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Simular com IA
+                </button>
+            </form>
+        </div>
+
+        <!-- Área de Resultados -->
+        <div class="card" style="grid-column: span 8; min-height: 400px; position: relative;">
+            <h2><i class="fa-solid fa-chart-line"></i> Projeção de Rentabilidade</h2>
+
+            <!-- Loader (Escondido inicialmente) -->
+            <div id="sim-loader" style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.9); z-index: 10; flex-direction: column; align-items: center; justify-content: center; border-radius: 16px;">
+                <div class="loader-spinner" style="border-top-color: var(--amarelo);"></div>
+                <p style="font-weight: 600; color: var(--verde-secundario);">A IA está analisando o histórico do ativo...</p>
+            </div>
+
+            <!-- Conteúdo Inicial -->
+            <div id="sim-empty" style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ccc;">
+                <i class="fa-solid fa-chart-area" style="font-size: 64px; margin-bottom: 16px;"></i>
+                <p>Preencha os dados ao lado para gerar a simulação.</p>
+            </div>
+
+            <!-- Gráfico (Escondido inicialmente) -->
+            <div id="sim-result" style="display: none;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px; background: #F9F9F9; padding: 15px; border-radius: 12px; flex-wrap: wrap; gap: 10px;">
+                    <div style="text-align: center; flex: 1;">
+                        <small>Cenário Pessimista</small>
+                        <div id="val-pessimistic" style="font-weight: 700; color: var(--vermelho); font-size: 18px;">R$ 0,00</div>
+                    </div>
+                    <div style="text-align: center; flex: 1; border-left: 1px solid #ddd; border-right: 1px solid #ddd;">
+                        <small>Tendência da IA</small>
+                        <div id="val-projected" style="font-weight: 700; color: var(--verde-primario); font-size: 22px;">R$ 0,00</div>
+                    </div>
+                    <div style="text-align: center; flex: 1;">
+                        <small>Cenário Otimista</small>
+                        <div id="val-optimistic" style="font-weight: 700; color: var(--amarelo); font-size: 18px;">R$ 0,00</div>
+                    </div>
+                </div>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="investChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('sim-form');
+    const loader = document.getElementById('sim-loader');
+    const emptyState = document.getElementById('sim-empty');
+    const resultState = document.getElementById('sim-result');
+    const feedback = document.getElementById('form-feedback'); // Container de erro
+    let chartInstance = null;
+
+    // Função para mostrar erros estilizados
+    function showError(message) {
+        feedback.innerHTML = `
+            <div class="alert alert-danger" style="animation: fadeIn 0.3s;">
+                ${message}
+            </div>
+        `;
+    }
+
+    // Função para limpar erros
+    function clearError() {
+        feedback.innerHTML = '';
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearError(); // Limpa erros anteriores
+
+        let ticker = document.getElementById('ticker').value.trim();
+        const amount = document.getElementById('amount').value;
+        const months = document.getElementById('months').value;
+
+        if(!ticker) {
+            showError("Por favor, selecione ou digite um ativo.");
+            return;
+        }
+
+        if(!amount || amount <= 0) {
+            showError("Por favor, insira um valor inicial válido.");
+            return;
+        }
+
+        // UI: Mostrar Loader e esconder resultados
+        loader.style.display = 'flex';
+        emptyState.style.display = 'none';
+        resultState.style.display = 'none';
+
+        try {
+            const response = await fetch("{{ url_for('investments.simulate') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ticker, amount, months })
+            });
+
+            const data = await response.json();
+
+            if(data.error) {
+                // Exibe o erro vindo do backend (ex: "Dados insuficientes...")
+                showError(data.error);
+                loader.style.display = 'none';
+                emptyState.style.display = 'flex';
+                return;
+            }
+
+            // UI: Mostrar Resultado (Sucesso)
+            renderChart(data);
+            updateCards(data);
+            loader.style.display = 'none';
+            resultState.style.display = 'block';
+
+        } catch (error) {
+            console.error(error);
+            showError("Erro de conexão com o servidor de IA. Tente novamente.");
+            loader.style.display = 'none';
+            emptyState.style.display = 'flex';
+        }
+    });
+
+    function updateCards(data) {
+        const fmt = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const finalIdx = data.projected.length - 1;
+
+        document.getElementById('val-pessimistic').textContent = fmt(data.pessimistic[finalIdx]);
+        document.getElementById('val-projected').textContent = fmt(data.projected[finalIdx]);
+        document.getElementById('val-optimistic').textContent = fmt(data.optimistic[finalIdx]);
+    }
+
+    function renderChart(data) {
+        const ctx = document.getElementById('investChart').getContext('2d');
+
+        if(chartInstance) chartInstance.destroy();
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [
+                    {
+                        label: 'Otimista',
+                        data: data.optimistic,
+                        borderColor: '#FFD302',
+                        backgroundColor: 'rgba(255, 211, 2, 0.1)',
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        fill: false
+                    },
+                    {
+                        label: 'Tendência IA',
+                        data: data.projected,
+                        borderColor: '#35D16C',
+                        backgroundColor: 'rgba(53, 209, 108, 0.2)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: false
+                    },
+                    {
+                        label: 'Pessimista',
+                        data: data.pessimistic,
+                        borderColor: '#FF4757',
+                        backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: `Projeção para ${data.symbol} (${data.shares} cotas)` },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    y: {
+                        ticks: { callback: (value) => 'R$ ' + value.toLocaleString('pt-BR') }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+<!-- Estilos específicos para o Loader e Animação -->
+<style>
+.loader-spinner {
+    width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--verde-primario);
+    border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;
+}
+input[list]::-webkit-calendar-picker-indicator {
+    opacity: 0.6;
+    cursor: pointer;
+}
+input[list]:hover::-webkit-calendar-picker-indicator {
+    opacity: 1;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}

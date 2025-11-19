@@ -36,13 +36,16 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="{{ url_for('investments.index') }}"
+                       class="{{ 'active' if request.endpoint.startswith('investments.') else '' }}">
                         <i class="fa-solid fa-arrow-trend-up"></i>
                         <span>Investimentos</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <!-- CORREÇÃO: O link agora aponta para a rota 'main.news' -->
+                    <a href="{{ url_for('main.news_page') }}"
+                       class="{{ 'active' if request.endpoint.startswith('main.news') else '' }}">
                         <i class="fa-solid fa-newspaper"></i>
                         <span>Notícias</span>
                     </a>

@@ -1,0 +1,195 @@
+{% extends "dashboard_base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>Notícias</h1>
+    <p class="text-regular" style="margin-bottom: 24px; color: var(--cinza-texto);">
+        Acompanhe as últimas atualizações do mercado, política e negócios.
+    </p>
+
+    <!-- Barra de Filtros -->
+    <!-- As classes agora vêm de 'static/css/pages/news.css' -->
+    <div class="news-controls card">
+        <div class="search-wrapper">
+
+            <input type="text" id="newsSearch" class="search-input" placeholder="Buscar por título...">
+        </div>
+
+        <select id="newsSource" class="filter-select">
+            <option value="">Todas as fontes</option>
+            <!-- Preenchido via JS -->
+        </select>
+
+        <select id="newsTag" class="filter-select">
+            <option value="">Todos os temas</option>
+            <option value="economia">Economia</option>
+            <option value="agro">Agro</option>
+            <option value="cripto">Cripto</option>
+            <option value="negocios">Negócios</option>
+            <option value="politica">Política</option>
+        </select>
+
+        <button id="refreshNews" class="btn btn-refresh">
+            <i class="fa-solid fa-rotate-right"></i> Atualizar
+        </button>
+    </div>
+
+    <!-- Container de Conteúdo -->
+    <div id="news-content-container">
+        <!-- Loader Inicial -->
+        <div class="loader-container">
+            <div class="loader-spinner"></div>
+            <p>Conectando aos feeds de notícias...</p>
+        </div>
+    </div>
+</div>
+
+<!--
+    Nota: Todo o CSS inline (<style>) foi removido.
+    Os estilos agora são carregados de:
+    - static/css/pages/news.css
+    - static/css/components/cards.css
+-->
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('news-content-container');
+    const sourceSel = document.getElementById('newsSource');
+    const search = document.getElementById('newsSearch');
+    const tagSel = document.getElementById('newsTag');
+    const refreshBtn = document.getElementById('refreshNews');
+
+    let allNews = [];
+
+    function render(list) {
+        if (!list || list.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding: 60px; background:white; border-radius:16px; color: #666;">
+                    <i class="fa-solid fa-newspaper" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                    <p>Nenhuma notícia encontrada com esses filtros.</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<div class="news-grid">';
+        list.forEach(item => {
+            // Lógica de Tags
+            let tagsHtml = '';
+            const t = (item.title || '').toLowerCase();
+            let hasTag = false;
+
+            if(t.includes('agro') || t.includes('safra') || t.includes('soja') || t.includes('boi')) {
+                tagsHtml += '<span class="tag agro">Agro</span>'; hasTag = true;
+            }
+            if(t.includes('bolsa') || t.includes('mercado') || t.includes('dólar') || t.includes('juros') || t.includes('copom')) {
+                tagsHtml += '<span class="tag economia">Economia</span>'; hasTag = true;
+            }
+            if(t.includes('cripto') || t.includes('bitcoin') || t.includes('blockchain')) {
+                tagsHtml += '<span class="tag cripto">Cripto</span>'; hasTag = true;
+            }
+            if(!hasTag) tagsHtml += '<span class="tag geral">Geral</span>';
+
+            const dateStr = item.published ? item.published.substring(0, 16) : '';
+
+            // O HTML gerado aqui usa as classes definidas em 'components/cards.css'
+            html += `
+            <article class="news-card">
+                <div class="news-meta">
+                    <span class="news-source"><i class="fa-solid fa-newspaper"></i> ${item.source}</span>
+                    <span>${dateStr}</span>
+                </div>
+
+                <h3 class="news-title">
+                    <a href="${item.link}" target="_blank">${item.title}</a>
+                </h3>
+
+                <div class="news-footer">
+                    <div class="tags-container">${tagsHtml}</div>
+                    <a href="${item.link}" target="_blank" class="read-more">Ler completa <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </article>
+            `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function applyFilters() {
+        const q = search.value.trim().toLowerCase();
+        const s = sourceSel.value;
+        const tag = tagSel.value;
+
+        let filtered = allNews.slice();
+
+        if (s) filtered = filtered.filter(x => x.source === s);
+
+        if (tag) {
+            filtered = filtered.filter(x => {
+                const t = (x.title || '').toLowerCase();
+                if (tag === 'agro') return t.includes('agro') || t.includes('safra') || t.includes('soja');
+                if (tag === 'economia') return t.includes('bolsa') || t.includes('mercado') || t.includes('dólar') || t.includes('econom');
+                if (tag === 'cripto') return t.includes('cripto') || t.includes('bitcoin');
+                if (tag === 'negocios') return t.includes('empresa') || t.includes('fusão') || t.includes('venda');
+                if (tag === 'politica') return t.includes('governo') || t.includes('ministr') || t.includes('lei');
+                return true;
+            });
+        }
+
+        if (q) {
+            filtered = filtered.filter(x => (x.title + ' ' + x.source).toLowerCase().includes(q));
+        }
+
+        render(filtered);
+    }
+
+    function loadNews() {
+        container.innerHTML = `
+            <div class="loader-container">
+                <div class="loader-spinner"></div>
+                <p>Buscando atualizações...</p>
+            </div>
+        `;
+
+        fetch("{{ url_for('main.api_news') }}?limit=50")
+            .then(res => {
+                if (!res.ok) throw new Error("Erro na API");
+                return res.json();
+            })
+            .then(data => {
+                allNews = data;
+
+                const currentSource = sourceSel.value;
+                const sources = Array.from(new Set(data.map(n => n.source))).sort();
+
+                sourceSel.innerHTML = '<option value="">Todas as fontes</option>';
+                sources.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s;
+                    opt.textContent = s;
+                    if(s === currentSource) opt.selected = true;
+                    sourceSel.appendChild(opt);
+                });
+
+                applyFilters();
+            })
+            .catch(err => {
+                console.error(err);
+                container.innerHTML = `
+                    <div style="text-align:center; padding: 40px; background:white; border-radius:16px; color: var(--vermelho);">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 48px; margin-bottom: 16px;"></i>
+                        <p>Erro ao carregar notícias. Tente novamente mais tarde.</p>
+                    </div>
+                `;
+            });
+    }
+
+    sourceSel.addEventListener('change', applyFilters);
+    tagSel.addEventListener('change', applyFilters);
+    search.addEventListener('input', applyFilters);
+    refreshBtn.addEventListener('click', loadNews);
+
+    loadNews();
+});
+</script>
+{% endblock %}

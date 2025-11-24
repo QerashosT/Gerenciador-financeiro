@@ -122,3 +122,24 @@ O projeto possui uma suíte de testes unitários e funcionais para garantir a in
 Para rodar os testes:
 ```bash
 python -m unittest discover tests
+```
+
+📂 Estrutura de Diretórios
+```bash
+Gerenciador-financeiro/
+├── project/
+│   ├── __init__.py        # Application Factory
+│   ├── models.py          # Modelos do Banco de Dados
+│   ├── auth/              # Blueprint de Autenticação
+│   ├── main/              # Blueprint Principal (Dashboard/Controle)
+│   ├── investments/       # Blueprint de Investimentos (IA)
+│   ├── utils/             # Módulos de IA e Notícias
+│   ├── static/            # CSS, JS, Imagens
+│   └── templates/         # HTML (Jinja2)
+├── tests/                 # Testes Unitários
+├── config.py              # Configurações de Ambiente
+├── run.py                 # Ponto de Entrada
+├── requirements.txt       # Dependências
+└── Dockerfile             # Configuração Docker
+```
+Desenvolvido para a ExpoTech.

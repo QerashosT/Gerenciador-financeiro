@@ -68,7 +68,4 @@ def fetch_news(limit=20):
                 })
         except Exception:
             continue
-
-    # Embaralha um pouco ou ordena? Por enquanto vamos retornar a lista bruta
-    # O ideal seria ordenar por data, mas formatos de data RSS variam muito.
     return results[:limit]

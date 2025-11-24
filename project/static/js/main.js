@@ -30,7 +30,9 @@ function initializeMasks() {
 
         // Quando carrega (ex: editar ou erro de validação)
         if (hiddenValueInput.value) {
-            mask.value = hiddenValueInput.value;
+            // Converte "150000.00" para "150000,00" antes de aplicar na máscara
+            const valueFromDB = hiddenValueInput.value.replace('.', ',');
+            mask.value = valueFromDB;
         }
 
         // Quando o usuário digita

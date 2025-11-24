@@ -17,7 +17,6 @@ class BaseTestCase(unittest.TestCase):
     """Classe base para configuração de testes."""
 
     def setUp(self):
-        # --- CORREÇÃO AQUI ---
         # Passamos a TestConfig JÁ na criação do app.
         # Assim, o db.init_app() usa a memória RAM e nunca toca no expenses.db
         self.app = create_app(config_class=TestConfig)

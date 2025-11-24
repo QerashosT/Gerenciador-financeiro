@@ -14,7 +14,6 @@ def predict_next_month_expenses(user_id):
     # 1. Extração de Dados (SQLAlchemy -> Pandas)
     query = db.session.query(Expense).filter_by(user_id=user_id)
 
-    # --- CORREÇÃO AQUI ---
     # Usamos db.session.connection() para garantir compatibilidade com Pandas
     try:
         df = pd.read_sql(query.statement, db.session.connection())

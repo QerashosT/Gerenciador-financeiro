@@ -37,7 +37,6 @@ def create_app(config_class=Config):
     # Importa e registra os Blueprints
     from project.auth.routes import auth as auth_blueprint
     from project.main.routes import main as main_blueprint
-    # --- NOVO: Importa o Blueprint de Investimentos ---
     from project.investments.routes import investments as investments_blueprint
 
     app.register_blueprint(auth_blueprint, url_prefix='/auth')

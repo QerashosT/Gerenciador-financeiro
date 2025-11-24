@@ -6,13 +6,12 @@ from project import db
 from project.main.forms import IncomeForm, ExpenseForm, GoalForm
 from project.utils.ai import predict_next_month_expenses
 from project.utils.news import fetch_news
-from datetime import datetime
+from datetime import datetime, timezone
 from dateutil.relativedelta import relativedelta
-import json  # <--- IMPORTANTE PARA DEBUG E FORMATACAO
+import json
 
 main = Blueprint('main', __name__, template_folder='../templates')
 
-# ... (mantenha suas listas EXPENSE_CATEGORIES e CATEGORY_ICONS aqui) ...
 EXPENSE_CATEGORIES = [
     'Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Lazer',
     'Educação', 'Roupas', 'Serviços', 'Outra'
@@ -38,7 +37,6 @@ def index():
     user_goals = Goal.query.filter_by(owner=current_user).order_by(Goal.created_at.desc()).all()
     main_goal = user_goals[0] if user_goals else None
 
-    # ... (Lógica do formulário de Meta - MANTENHA IGUAL) ...
     if 'goal-submit_goal' in request.form and goal_form.validate_on_submit():
         if main_goal:
             main_goal.name = goal_form.name.data
@@ -63,9 +61,9 @@ def index():
         goal_form.target_date.data = main_goal.target_date
 
     # --- LÓGICA DO DASHBOARD ---
-    today = datetime.utcnow()
+    today = datetime.now(timezone.utc)
 
-    # 1. KPIs (Mantenha igual, mas garanta float na soma)
+    # 1. KPIs
     incomes_mes = Income.query.filter(
         db.extract('month', Income.date) == today.month,
         db.extract('year', Income.date) == today.year,
@@ -80,7 +78,7 @@ def index():
     total_expense = sum(e.amount for e in expenses_mes)
     savings = total_income - total_expense
 
-    # 2. Progresso da Meta (Mantenha igual)
+    # 2. Progresso da Meta
     goal_progress = 0
     if main_goal:
         total_savings = db.session.query(db.func.sum(Income.amount)).filter(
@@ -93,7 +91,7 @@ def index():
             goal_progress = (current_val / main_goal.target_amount) * 100
         goal_progress = max(0, min(100, goal_progress))
 
-    # 3. GRÁFICO DE CATEGORIA (CORRIGIDO)
+    # 3. GRÁFICO DE CATEGORIA
     # Usamos float() para garantir que não vá Decimal para o JSON
     cat_query = db.session.query(
         Expense.category,
@@ -138,10 +136,10 @@ def index():
         "expenses": trend_expenses
     }
 
-    # 5. INTELIGÊNCIA ARTIFICIAL (NOVO)
+    # 5. INTELIGÊNCIA ARTIFICIAL
     ai_prediction = predict_next_month_expenses(current_user.id)
 
-    # 6. Transações Recentes (Mantenha igual)
+    # 6. Transações Recentes
     recent_incomes = Income.query.filter_by(owner=current_user).order_by(Income.date.desc()).limit(5).all()
     recent_expenses = Expense.query.filter_by(owner=current_user).order_by(Expense.date.desc()).limit(5).all()
     all_transactions = []
@@ -164,21 +162,16 @@ def index():
                            recent_transactions=recent_transactions)
 
 
-# ... (Mantenha a rota /controle e deletes iguais) ...
 @main.route('/controle', methods=['GET', 'POST'])
 @login_required
 def controle():
-    # ... (código existente) ...
-    # Certifique-se de retornar o template corretamente
     income_form = IncomeForm(prefix='income')
     expense_form = ExpenseForm(prefix='expense')
     expense_form.category.choices = [(c, c) for c in EXPENSE_CATEGORIES]
 
-    # ... (lógica de post existente) ...
-    # Apenas para garantir que o código não quebre, copiei a estrutura
     if request.method == "GET":
-        if not income_form.date.data: income_form.date.data = datetime.utcnow().date()
-        if not expense_form.date.data: expense_form.date.data = datetime.utcnow().date()
+        if not income_form.date.data: income_form.date.data = datetime.now(timezone.utc).date()
+        if not expense_form.date.data: expense_form.date.data = datetime.now(timezone.utc).date()
 
     if 'income-submit_income' in request.form and income_form.validate_on_submit():
         # ... lógica de salvar ...
@@ -208,7 +201,6 @@ def controle():
                            category_icons=CATEGORY_ICONS)
 
 
-# ... (Mantenha rotas de delete) ...
 @main.route('/delete/income/<int:item_id>', methods=['POST'])
 @login_required
 def delete_income(item_id):

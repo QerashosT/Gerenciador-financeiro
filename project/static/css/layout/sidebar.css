@@ -126,7 +126,21 @@
     margin-bottom: var(--spacing-32);
 }
 
-/* Responsive */
+/* Esconder botão mobile no desktop */
+.mobile-menu-item {
+    display: none;
+}
+
+/* Menu popup mobile - esconder no desktop */
+.mobile-user-menu {
+    display: none;
+}
+
+.mobile-menu-overlay {
+    display: none;
+}
+
+/* Responsive - Tablet */
 @media (max-width: 1024px) {
     .sidebar {
         width: 80px;
@@ -134,14 +148,36 @@
 
     .sidebar-header {
         flex-direction: column;
+        padding: var(--spacing-16);
     }
 
     .sidebar-title {
         display: none;
     }
 
+    .sidebar-nav {
+        padding: 0 var(--spacing-8);
+    }
+
+    .sidebar-nav a {
+        flex-direction: column;
+        gap: var(--spacing-4);
+        padding: var(--spacing-12) var(--spacing-8);
+        font-size: 12px;
+    }
+
     .sidebar-nav a span {
-        display: none;
+        font-size: 11px;
+        text-align: center;
+    }
+
+    .sidebar-nav a i {
+        font-size: 22px;
+    }
+
+    .sidebar-footer {
+        flex-direction: column;
+        padding: var(--spacing-16);
     }
 
     .sidebar-footer .user-info span {
@@ -149,8 +185,225 @@
     }
 }
 
+/* Responsive - Mobile */
 @media (max-width: 768px) {
+    .dashboard-layout {
+        flex-direction: column;
+    }
+
+    /* Mostrar botão de menu no mobile */
+    .mobile-menu-item {
+        display: flex;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        flex-direction: row;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-header {
+        display: none;
+    }
+
+    .sidebar-nav {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-nav li {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .sidebar-nav a {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: var(--spacing-4);
+        padding: var(--spacing-12) var(--spacing-8);
+        margin: 0;
+        border-radius: 0;
+        width: 100%;
+        font-size: 11px;
+    }
+
+    .sidebar-nav a i {
+        font-size: 20px;
+        width: auto;
+    }
+
+    .sidebar-nav a span {
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .sidebar-nav a.active {
+        background-color: var(--verde-secundario-light);
+        border-radius: 0;
+    }
+
+    .sidebar-footer {
+        display: none;
+    }
+
+    /* Menu Mobile - Botão de mais opções */
+    .mobile-menu-trigger {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: var(--spacing-4);
+        padding: var(--spacing-12) var(--spacing-8);
+        margin: 0;
+        border-radius: 0;
+        width: 100%;
+        font-size: 11px;
+        background: none;
+        border: none;
+        color: var(--verde-secundario);
+        cursor: pointer;
+        font-family: var(--font-inter);
+        font-weight: 600;
+        transition: background-color var(--transition-fast);
+        position: relative;
+    }
+
+    .mobile-menu-trigger:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .mobile-menu-trigger i {
+        font-size: 20px;
+    }
+
+    .mobile-menu-trigger span {
+        font-size: 10px;
+    }
+
+    /* Menu popup mobile */
+    .mobile-user-menu {
+        display: none;
+        position: fixed;
+        bottom: 70px;
+        right: 10px;
+        background-color: var(--verde-primario);
+        border-radius: var(--radius-md);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+        padding: var(--spacing-16);
+        min-width: 200px;
+        z-index: 1001;
+    }
+
+    .mobile-user-menu.active {
+        display: block;
+        animation: slideUp 0.2s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .mobile-user-menu .user-info {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-12);
+        padding: var(--spacing-12);
+        margin-bottom: var(--spacing-8);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        font-family: var(--font-inter);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--verde-secundario);
+    }
+
+    .mobile-user-menu .user-info i {
+        font-size: 24px;
+    }
+
+    .mobile-user-menu .logout-button {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-12);
+        width: 100%;
+        padding: var(--spacing-12);
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        font-family: var(--font-inter);
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--verde-secundario);
+        transition: background-color var(--transition-fast);
+    }
+
+    .mobile-user-menu .logout-button:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .mobile-user-menu .logout-button i {
+        font-size: 18px;
+    }
+
+    /* Overlay para fechar o menu */
+    .mobile-menu-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: transparent;
+        z-index: 999;
+    }
+
+    .mobile-menu-overlay.active {
+        display: block;
+    }
+
     .main-content {
         padding: var(--spacing-24);
+        padding-bottom: calc(var(--spacing-24) + 70px); /* Espaço para o menu inferior */
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+}
+
+/* Mobile Pequeno */
+@media (max-width: 480px) {
+    .sidebar-nav a {
+        padding: var(--spacing-8) var(--spacing-4);
+        font-size: 10px;
+    }
+
+    .sidebar-nav a i {
+        font-size: 18px;
+    }
+
+    .sidebar-nav a span {
+        font-size: 9px;
+    }
+
+    .main-content {
+        padding: var(--spacing-16);
+        padding-bottom: calc(var(--spacing-16) + 65px);
     }
 }

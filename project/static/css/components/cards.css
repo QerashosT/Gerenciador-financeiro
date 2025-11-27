@@ -281,3 +281,16 @@
         font-size: 24px;
     }
 }
+/* Responsividade específica para grid de investimentos */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: var(--spacing-16);
+    }
+
+    .dashboard-grid .card {
+        grid-column: span 1 !important;
+        width: 100%;
+    }
+}

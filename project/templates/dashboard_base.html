@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <title>{{ title or 'Dashboard' }} - Me Ajuda AI</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/Me_ajuda_ai_logo.svg') }}" type="image/svg+xml">
 </head>
 <body>
 
@@ -43,12 +44,17 @@
                     </a>
                 </li>
                 <li>
-                    <!-- CORREÇÃO: O link agora aponta para a rota 'main.news' -->
                     <a href="{{ url_for('main.news_page') }}"
                        class="{{ 'active' if request.endpoint.startswith('main.news') else '' }}">
                         <i class="fa-solid fa-newspaper"></i>
                         <span>Notícias</span>
                     </a>
+                </li>
+                <li class="mobile-menu-item">
+                    <button class="mobile-menu-trigger" id="mobileMenuBtn" type="button">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                        <span>Mais</span>
+                    </button>
                 </li>
             </ul>
 
@@ -62,6 +68,21 @@
                 </a>
             </div>
         </nav>
+
+        <!-- Overlay para fechar o menu mobile -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+        <!-- Menu popup mobile -->
+        <div class="mobile-user-menu" id="mobileUserMenu">
+            <div class="user-info">
+                <i class="fa-solid fa-user-circle"></i>
+                <span>{{ current_user.name }}</span>
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="logout-button">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Sair</span>
+            </a>
+        </div>
 
         <main class="main-content">
 
@@ -83,6 +104,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <script src="https://unpkg.com/imask"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script>
+        // Menu mobile toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileUserMenu');
+            const overlay = document.getElementById('mobileMenuOverlay');
+
+            if (menuBtn && mobileMenu && overlay) {
+                menuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    mobileMenu.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                });
+
+                overlay.addEventListener('click', function() {
+                    mobileMenu.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+
+                // Fechar ao clicar fora
+                document.addEventListener('click', function(e) {
+                    if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+                        mobileMenu.classList.remove('active');
+                        overlay.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>
